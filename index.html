@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRANSCHAT.com</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        async function translateText() {
+            const textToTranslate = document.getElementById("text-to-translate").value.trim();
+            const targetLanguage = document.getElementById("target-language").value;
+            const translatedText = document.getElementById("translated-text");
+
+            if (!textToTranslate) {
+                translatedText.textContent = "Enter text to translate.";
+                return;
+            }
+
+            translatedText.textContent = "Translating...";
+
+            try {
+                const params = new URLSearchParams({
+                    q: textToTranslate,
+                    langpair: `en|${targetLanguage}`
+                });
+                const response = await fetch(`https://api.mymemory.translated.net/get?${params}`);
+                if (!response.ok) {
+                    throw new Error(`Translation request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const result = data.responseData?.translatedText;
+                translatedText.textContent = result || "Translation unavailable.";
+            } catch (error) {
+                console.error(error);
+                translatedText.textContent = "Translation failed. Check your internet connection and try again.";
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <h1>TRANSCHART</h1>
+            </div>
+            <ul class="navbar">
+                <li><a href="login.html">login</a></li>
+                <li><a href="course.html">Courses</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="help.html">Help</a></li>
+                <li><a href="speech.html">Speak</a></li>
+            </ul>
+            <div class="search-bar">
+                <input type="text" placeholder="Search...">
+                <button type="submit">Search</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home">
+            <pre><big><h1>    
+                <b>  Try it now to translate your text into multiple languages instantly.</b>
+            </h1></big></pre>
+
+            <!-- Language translation form -->
+            <div class="translation">
+                <h3>Translate Text</h3>
+                <textarea id="text-to-translate" placeholder="Enter text to translate" rows="4" cols="50"></textarea><br><br>
+                <select id="target-language">
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="it">Italian</option>
+                    <option value="zh">Chinese</option>
+                    <!-- Add more languages here -->
+                </select><br><br>
+                <button onclick="translateText()">Translate</button><br><br>
+                <h4>Translated Text:</h4>
+                <p id="translated-text"></p>
+            </div>
+
+        </section>
+    </main>
+    <pre><big><b><h3>                    
+            <br>
+            <br>                       
+        
+        
+        
+            <a href="about.html">About</a>  
+            <a href="help.html">Help</a></h3></b></big></pre>
+    <br>
+
+    <footer>
+        <p>&copy;CONTRIVE-2K25 </p>
+    </footer>
+</body>
+</html>
+

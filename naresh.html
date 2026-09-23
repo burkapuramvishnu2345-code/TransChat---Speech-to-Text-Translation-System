@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Courses</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .course {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px;
+            text-align: center;
+        }
+        .course-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .course-description {
+            margin: 10px 0;
+        }
+        .enroll-button {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .enroll-button:hover {
+            background-color: darkgreen;
+        }
+        .enrolled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Available Courses</h1>
+
+<div class="course">
+    <div class="course-title">SQL</div>
+    <div class="course-description">Description for Course 1. This is a brief overview of what the course entails.</div>
+    <button id="enroll-sql" class="enroll-button" onclick="enroll('SQL')">Enroll</button>
+</div>
+
+<div class="course">
+    <div class="course-title">RUBY</div>
+    <div class="course-description">Description for Course 2. This is a brief overview of what the course entails.</div>
+    <button id="enroll-ruby" class="enroll-button" onclick="enroll('RUBY')">Enroll</button>
+</div>
+
+<div class="course">
+    <div class="course-title">JAVA</div>
+    <div class="course-description">Description for Course 3. This is a brief overview of what the course entails.</div>
+    <button id="enroll-java" class="enroll-button" onclick="enroll('JAVA')">Enroll</button>
+</div>
+
+<script>
+    function enroll(courseName) {
+        const buttonId = `enroll-${courseName.toLowerCase()}`;
+        const enrollButton = document.getElementById(buttonId);
+
+        if (!enrollButton.classList.contains("enrolled")) {
+            alert(`You have successfully enrolled in the ${courseName} course!`);
+            enrollButton.innerText = "Enrolled";
+            enrollButton.classList.add("enrolled");
+            enrollButton.disabled = true; // Disables the button after enrollment
+        } else {
+            alert(`You are already enrolled in the ${courseName} course.`);
+        }
+    }
+</script>
+
+</body>
+</html>

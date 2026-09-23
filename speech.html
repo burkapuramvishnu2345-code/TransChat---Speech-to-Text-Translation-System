@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Speech-to-Text Translator</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0px 0px 10px gray;
+      border-radius: 8px;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .button-row button {
+      flex: 1;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #28a745;
+      color: white;
+    }
+
+    .button-row button:hover {
+      background-color: #218838;
+    }
+
+    select, p, textarea {
+      font-size: 18px;
+      margin: 10px 0;
+      width: 100%;
+      padding: 10px;
+    }
+
+    #recognized-text, #translated-text {
+      font-weight: bold;
+      min-height: 30px;
+    }
+
+    #text-input-area,
+    #text-note {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Speech-to-Text Translator</h1>
+
+    <!-- Input language for speech -->
+    <label for="input-language">Select language to speak:</label>
+    <select id="input-language">
+      <option value="en-US">English</option>
+      <option value="te">Telugu</option>
+      <option value="es">Spanish</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="hi">Hindi</option>
+      <option value="zh-CN">Chinese</option>
+    </select>
+
+    <div class="button-row">
+      <button id="text-btn">Click Here to Text</button>
+      <button id="start-btn">🎤 Start Speaking</button>
+    </div>
+
+    <div id="text-input-area">
+      <textarea id="input-text" rows="4" placeholder="Type your message here..."></textarea>
+      <p id="text-note" style="color: red;">Note: You can only type the text in English to translate.</p>
+    </div>
+
+    <p id="recognized-text">Your content will appear right here...</p>
+
+    <label for="translation-type">Choose to either text or speech:</label>
+    <select id="translation-type">
+      <option value="text">Translate to Text</option>
+      <option value="speech">Translate to Speech</option>
+    </select>
+
+    <label for="language-select">Select the language to translate:</label>
+    <select id="language-select">
+      <option value="en">English</option>
+      <option value="es">Spanish</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="hi">Hindi</option>
+      <option value="zh-CN">Chinese</option>
+      <option value="te">Telugu</option>
+    </select>
+
+    <button id="translate-btn">Click here to translate</button>
+    <p id="translated-text">Translation will appear here...</p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const startBtn = document.getElementById("start-btn");
+      const textBtn = document.getElementById("text-btn");
+      const translateBtn = document.getElementById("translate-btn");
+      const recognizedText = document.getElementById("recognized-text");
+      const translatedText = document.getElementById("translated-text");
+      const inputLanguageSelect = document.getElementById("input-language");
+      const languageSelect = document.getElementById("language-select");
+      const translationType = document.getElementById("translation-type");
+      const textInputArea = document.getElementById("text-input-area");
+      const inputTextArea = document.getElementById("input-text");
+
+      let recognition;
+      if ("SpeechRecognition" in window || "webkitSpeechRecognition" in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.continuous = false;
+      } else {
+        alert("Speech recognition not supported in this browser. Try using Google Chrome.");
+      }
+
+      // Load voices early
+      speechSynthesis.onvoiceschanged = () => {
+        speechSynthesis.getVoices();
+      };
+
+      startBtn.addEventListener("click", () => {
+        if (!recognition) return;
+        textInputArea.style.display = "none";
+        inputTextArea.value = "";
+        recognizedText.textContent = "Listening...";
+        recognition.lang = inputLanguageSelect.value;
+        recognition.start();
+      });
+
+      textBtn.addEventListener("click", () => {
+        recognizedText.textContent = "";
+        textInputArea.style.display = "block";
+        document.getElementById("text-note").style.display = "block";
+      });
+
+      if (recognition) {
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          recognizedText.textContent = transcript;
+        };
+
+        recognition.onerror = (event) => {
+          recognizedText.textContent = "Error: " + event.error;
+        };
+      }
+
+      translateBtn.addEventListener("click", async () => {
+        let text = inputTextArea.value.trim();
+        if (!text) {
+          text = recognizedText.textContent.trim();
+        }
+
+        if (!text || text === "Listening...") {
+          translatedText.textContent = "Please speak or type your message first!";
+          return;
+        }
+
+        const sourceLang = textInputArea.style.display === "block" ? "en" : inputLanguageSelect.value.split('-')[0];
+        const targetLang = languageSelect.value;
+        const type = translationType.value;
+
+        try {
+          const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`);
+          const data = await response.json();
+          const translatedTextContent = data.responseData.translatedText;
+          translatedText.textContent = translatedTextContent;
+
+          if (type === "speech") {
+            const voices = window.speechSynthesis.getVoices();
+            const matchedVoice = voices.find(voice => voice.lang.startsWith(targetLang));
+            const utterance = new SpeechSynthesisUtterance(translatedTextContent);
+
+            if (matchedVoice) {
+              utterance.voice = matchedVoice;
+              utterance.lang = matchedVoice.lang;
+            } else {
+              utterance.lang = "en-US";
+              translatedText.textContent += " (Note: Voice not available for selected language. Using default voice.)";
+            }
+
+            window.speechSynthesis.speak(utterance);
+          }
+        } catch (error) {
+          translatedText.textContent = "Error in translation. Please try again.";
+          console.error("Error during translation:", error);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

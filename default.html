@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - youtube.com/codingnepal -->
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Language Translator | CodingNepal</title>
+    <link rel="stylesheet" href="default.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Font Awesome CDN Link for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+
+<body>
+    <div class="container">
+        <div class="wrapper">
+            <div class="text-input">
+                <textarea spellcheck="false" class="from-text" placeholder="Enter text"></textarea>
+                <textarea spellcheck="false" readonly disabled class="to-text" placeholder="Translation"></textarea>
+            </div>
+            <ul class="controls">
+                <li class="row from">
+                    <div class="icons">
+                        <i id="from" class="fas fa-volume-up"></i>
+                        <i id="from" class="fas fa-copy"></i>
+                    </div>
+                    <select class="from-select">
+                        <option value="en-GB">English</option>
+                        <option value="te-IN">Telugu</option>
+                        <option value="hi-IN">Hindi</option>
+                        <option value="mr-IN">Marathi</option>
+                        <option value="ar-SA">Arabic</option>
+                    </select>
+                </li>
+                <li class="exchange"><i class="fas fa-exchange-alt"></i></li>
+                <li class="row to">
+                    <select class="to-select">
+                        <option value="te-IN">Telugu</option>
+                        <option value="hi-IN">Hindi</option>
+                        <option value="mr-IN">Marathi</option>
+                        <option value="ar-SA">Arabic</option>
+                        <option value="en-GB">English</option>
+                    </select>
+                    <div class="icons">
+                        <i id="to" class="fas fa-volume-up"></i>
+                        <i id="to" class="fas fa-copy"></i>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <button class="button" onclick="translateText()">Translate Text</button>
+    </div>
+
+    <script>
+        function translateText() {
+            const fromText = document.querySelector('.from-text').value.trim();
+            const toText = document.querySelector('.to-text');
+            const fromLang = document.querySelector('.from-select').value;
+            const toLang = document.querySelector('.to-select').value;
+
+            if (!fromText) {
+                alert("Please enter text to translate.");
+                return;
+            }
+
+            // Setting placeholder while translating
+            toText.setAttribute("placeholder", "Translating...");
+
+            const apiUrl = `https://api.mymemory.translated.net/get?q=${fromText}&langpair=${fromLang}|${toLang}`;
+
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.responseData) {
+                        toText.value = data.responseData.translatedText;
+                    }
+                    if (data.matches && data.matches.length > 0) {
+                        const bestMatch = data.matches.find(match => match.quality === 100) || data.matches[0];
+                        if (bestMatch) {
+                            toText.value = bestMatch.translation;
+                        }
+                    }
+                    toText.setAttribute("placeholder", "Translation");
+                })
+                .catch(err => {
+                    toText.value = "Error in translation";
+                    console.error(err);
+                });
+        }
+    </script>
+
+</body>
+
+</html>

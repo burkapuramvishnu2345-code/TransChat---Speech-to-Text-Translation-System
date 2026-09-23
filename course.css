@@ -1,0 +1,62 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+    background-image: url('https://wallup.net/wp-content/uploads/2018/09/26/470347-abstract-art-colorful-colors-design-illustration-light-theme.jpg');
+    background-size: cover;
+}
+
+.course-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.course-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.course-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.course-item h2 {
+    margin-top: 0;
+}
+
+.enroll-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.enroll-btn:hover {
+    background-color: #45a049;
+}
+
+#message {
+    margin-top: 20px;
+    font-size: 16px;
+    color: green;
+}
